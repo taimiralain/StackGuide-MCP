@@ -12,7 +12,7 @@ export type TrackerType = 'github' | 'gitlab' | 'jira' | 'none';
 export type VcsType = 'github' | 'gitlab' | 'git';
 export type DetectionConfidence = 'high' | 'medium' | 'low' | 'manual' | 'unknown';
 export type TddTokenMode = 'compact' | 'balanced' | 'verbose';
-export type McpIntegration = 'jira' | 'github' | 'gitlab';
+export type McpIntegration = 'ponytail' | 'jira' | 'github' | 'gitlab';
 export type McpManifestTarget = 'cursor' | 'root';
 
 export interface TrackerConfig {
@@ -132,7 +132,7 @@ const DEFAULT_BRANCH_PATTERN = 'feature/<TICKET>-<slug>';
 const DEFAULT_MODEL = 'model-auto';
 const DEFAULT_TOKEN_MODE: TddTokenMode = 'compact';
 const DEFAULT_MCP_TARGETS: McpManifestTarget[] = ['cursor', 'root'];
-const DEFAULT_MCP_INTEGRATIONS: McpIntegration[] = [];
+const DEFAULT_MCP_INTEGRATIONS: McpIntegration[] = ['ponytail'];
 
 function readJsonSafe<T>(filePath: string): T | null {
   try {
@@ -211,7 +211,7 @@ function detectDefaultBranch(projectPath: string): string {
 }
 
 function normalizeMcpIntegration(value: string): McpIntegration | null {
-  if (value === 'jira' || value === 'github' || value === 'gitlab') {
+  if (value === 'ponytail' || value === 'jira' || value === 'github' || value === 'gitlab') {
     return value;
   }
   return null;
@@ -248,7 +248,8 @@ function detectJiraFromMcpConfig(projectPath: string): Partial<TrackerConfig> | 
   }
 
   for (const [name, serverRaw] of Object.entries(mcpServers)) {
-    if (!name.toLowerCase().includes('jira')) {
+    const normalizedName = name.toLowerCase();
+    if (!normalizedName.includes('jira') && !normalizedName.includes('atlassian')) {
       continue;
     }
 
@@ -374,6 +375,11 @@ function buildAutomationConfig(overrides: AgentConfigOverrides = {}): Automation
     .map(normalizeMcpIntegration)
     .filter((integration): integration is McpIntegration => integration !== null);
 
+  const mergedIntegrations = new Set<McpIntegration>([...DEFAULT_MCP_INTEGRATIONS]);
+  for (const integration of integrations) {
+    mergedIntegrations.add(integration);
+  }
+
   const syncTargets = (overrides.mcpSyncTargets || DEFAULT_MCP_TARGETS)
     .map(normalizeMcpTarget)
     .filter((target): target is McpManifestTarget => target !== null);
@@ -390,7 +396,7 @@ function buildAutomationConfig(overrides: AgentConfigOverrides = {}): Automation
       strictTemplate: true,
     },
     mcp: {
-      integrations: integrations.length > 0 ? integrations : [...DEFAULT_MCP_INTEGRATIONS],
+      integrations: Array.from(mergedIntegrations.values()),
       syncTargets: syncTargets.length > 0 ? syncTargets : [...DEFAULT_MCP_TARGETS],
     },
   };

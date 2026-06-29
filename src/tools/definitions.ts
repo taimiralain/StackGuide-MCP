@@ -37,8 +37,8 @@ export const toolDefinitions = [
         },
         integrations: {
           type: 'array',
-          items: { type: 'string', enum: ['jira', 'github', 'gitlab'] },
-          description: 'External MCP integrations to scaffold as templates'
+          items: { type: 'string', enum: ['ponytail', 'jira', 'github', 'gitlab'] },
+          description: 'External MCP integrations to scaffold as templates (ponytail is always included as core)'
         },
         mcpSyncTargets: {
           type: 'array',
@@ -411,8 +411,8 @@ export const toolDefinitions = [
         },
         integrations: {
           type: 'array',
-          items: { type: 'string', enum: ['jira', 'github', 'gitlab'] },
-          description: 'External MCP integrations to scaffold in local manifests'
+          items: { type: 'string', enum: ['ponytail', 'jira', 'github', 'gitlab'] },
+          description: 'External MCP integrations to scaffold in local manifests (ponytail is always included as core)'
         },
         mcpSyncTargets: {
           type: 'array',

@@ -2,7 +2,14 @@
   "mcpServers": {
     "stackguide": {
       "command": "npx",
-      "args": ["-y", "@stackguide/mcp-server@4.1.5"]
+      "args": ["-y", "@stackguide/mcp-server@latest"]
+    },
+    "ponytail": {
+      "command": "npx",
+      "args": ["-y", "@stackguide/mcp-server@latest", "stackguide-ponytail-mcp"],
+      "env": {
+        "PONYTAIL_DEFAULT_MODE": "lite"
+      }
     }
   }
 }
