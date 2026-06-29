@@ -1,10 +1,11 @@
 {
   "name": "@stackguide/mcp-server",
-  "version": "4.1.6",
+  "version": "4.2.0",
   "description": "MCP Server for dynamic language and framework context loading - Compatible with Cursor and GitHub Copilot",
   "main": "dist/index.js",
   "bin": {
-    "stackguide-mcp": "./dist/index.js"
+    "stackguide-mcp": "./dist/index.js",
+    "stackguide-ponytail-mcp": "./dist/ponytail-mcp.js"
   },
   "type": "module",
   "scripts": {
@@ -35,6 +36,7 @@
   "license": "GPL-3.0",
   "mcpName": "io.github.isucorp-taimiralain/stackguide-mcp",
   "dependencies": {
+    "@dietrichgebert/ponytail": "^4.8.4",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "better-sqlite3": "^12.5.0",
     "ts-morph": "^27.0.2",
@@ -55,6 +57,11 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   },
   "files": [
     "dist",

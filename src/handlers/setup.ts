@@ -173,7 +173,7 @@ export async function handleSetup(
           missingFields,
           options: {
             tokenMode: ['compact', 'balanced', 'verbose'],
-            integrations: ['jira', 'github', 'gitlab'],
+            integrations: ['ponytail', 'jira', 'github', 'gitlab'],
             mcpSyncTargets: ['cursor', 'root'],
           },
           hint: 'Use: setup enableAdaptiveTdd:true model:"<model>" integrations:["jira","github"] tokenMode:"compact"',

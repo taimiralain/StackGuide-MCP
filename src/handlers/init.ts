@@ -14,6 +14,7 @@ import {
   AgentConfigOverrides,
   generateAgentProjectConfig,
   getAgentConfigPath,
+  McpIntegration,
   readAgentProjectConfig,
   writeAgentProjectConfig,
 } from '../config/agentConfig.js';
@@ -147,7 +148,7 @@ function normalizeIntegrations(value: unknown): AgentConfigOverrides['mcpIntegra
     return undefined;
   }
   const normalized = value
-    .filter(item => item === 'jira' || item === 'github' || item === 'gitlab') as Array<'jira' | 'github' | 'gitlab'>;
+    .filter(item => item === 'ponytail' || item === 'jira' || item === 'github' || item === 'gitlab') as McpIntegration[];
   return normalized.length > 0 ? normalized : [];
 }
 
@@ -266,9 +267,10 @@ export async function handleInit(
               mcpAddedServers.length > 0
                 ? `MCP templates added: ${Array.from(new Set(mcpAddedServers)).join(', ')}.`
                 : 'No new MCP templates were added because selected servers already exist.',
+              'Ponytail MCP is always synced as core (lite mode by default) to save tokens.',
               mcpSync.placeholders.length > 0
                 ? `Replace placeholders in MCP manifests: ${mcpSync.placeholders.join(', ')}.`
-                : 'No placeholders pending in generated MCP templates.',
+                : 'Optional integrations use OAuth remote endpoints (Atlassian, GitHub, GitLab).',
             ]
             : ['MCP template synchronization skipped (applyMcpTemplates:false).']),
           'Use `agent action:"intake" ticket:"PROJ-123"` to run active workflow actions.',

@@ -17,8 +17,15 @@ Dynamic context + active engineering workflow for AI coding assistants in Cursor
 - adaptive TDD preferences per project (model + token profile)
 - Jira ticket creation from strict `MAIN DESCRIPTION` templates
 - tracker + VCS + test orchestration for delivery flow
+- bundled Ponytail MCP server (`stackguide-ponytail-mcp`) for on-demand lazy-senior-dev rules and lower token usage
 
 This server is built for real team usage, not just prompt templates.
+
+## What's New In v4.2
+
+- Bundled **Ponytail MCP** (`stackguide-ponytail-mcp`) — on-demand YAGNI rules via prompt/tool instead of always-on context.
+- Ponytail is a **core integration**: `init` always syncs it into `.mcp.json` / `.cursor/mcp.json` with `PONYTAIL_DEFAULT_MODE=lite`.
+- MCP templates now use official remote endpoints for Atlassian, GitHub, and GitLab (OAuth, no manual token placeholders).
 
 ## What's New In v4.x
 
@@ -46,10 +53,19 @@ This server is built for real team usage, not just prompt templates.
     "stackguide": {
       "command": "npx",
       "args": ["-y", "@stackguide/mcp-server@latest"]
+    },
+    "ponytail": {
+      "command": "npx",
+      "args": ["-y", "@stackguide/mcp-server@latest", "stackguide-ponytail-mcp"],
+      "env": {
+        "PONYTAIL_DEFAULT_MODE": "lite"
+      }
     }
   }
 }
 ```
+
+**Token tip:** Use Ponytail's `ponytail_instructions` tool or `ponytail` prompt only when you need strict YAGNI guardrails. Default mode `lite` keeps responses compact.
 
 ### JetBrains (IntelliJ, WebStorm, PhpStorm, etc.)
 
@@ -123,6 +139,8 @@ This server is built for real team usage, not just prompt templates.
 setup type:"react-typescript" enableAdaptiveTdd:true model:"gpt-5" integrations:["jira","github"] tokenMode:"compact"
 init action:"full" model:"gpt-5" tokenMode:"compact" integrations:["jira","github"] mcpSyncTargets:["cursor","root"] applyMcpTemplates:true
 ```
+
+Ponytail is always synced as a core MCP server even when omitted from `integrations`.
 
 1. Check generated setup:
 

@@ -24,58 +24,69 @@ export interface McpSyncTargetResult {
 
 export interface McpSyncResult {
   integrations: McpIntegration[];
+  coreIntegrations: McpIntegration[];
   placeholders: string[];
   targets: McpSyncTargetResult[];
 }
 
 const TARGETS: McpManifestTarget[] = ['cursor', 'root'];
 
+/** Always-on MCP servers synced on every init/setup regardless of optional integrations. */
+export const CORE_MCP_INTEGRATIONS: McpIntegration[] = ['ponytail'];
+
+const STACKGUIDE_MCP_PACKAGE = '@stackguide/mcp-server@latest';
+
 const INTEGRATION_TEMPLATES: Record<McpIntegration, IntegrationTemplate> = {
-  jira: {
-    serverName: 'jira',
+  ponytail: {
+    serverName: 'ponytail',
     config: {
       command: 'npx',
-      args: ['-y', '<jira-mcp-package>'],
+      args: ['-y', STACKGUIDE_MCP_PACKAGE, 'stackguide-ponytail-mcp'],
       env: {
-        JIRA_BASE_URL: 'https://your-domain.atlassian.net',
-        JIRA_TOKEN: '<JIRA_TOKEN>',
+        PONYTAIL_DEFAULT_MODE: 'lite',
       },
     },
-    placeholders: ['<jira-mcp-package>', '<JIRA_TOKEN>'],
+    placeholders: [],
+  },
+  jira: {
+    serverName: 'atlassian',
+    config: {
+      url: 'https://mcp.atlassian.com/v1/mcp',
+    },
+    placeholders: [],
   },
   github: {
     serverName: 'github',
     config: {
-      command: 'npx',
-      args: ['-y', '<github-mcp-package>'],
-      env: {
-        GITHUB_TOKEN: '<GITHUB_TOKEN>',
-      },
+      url: 'https://api.githubcopilot.com/mcp/',
     },
-    placeholders: ['<github-mcp-package>', '<GITHUB_TOKEN>'],
+    placeholders: [],
   },
   gitlab: {
     serverName: 'gitlab',
     config: {
-      command: 'npx',
-      args: ['-y', '<gitlab-mcp-package>'],
-      env: {
-        GITLAB_BASE_URL: 'https://gitlab.com',
-        GITLAB_TOKEN: '<GITLAB_TOKEN>',
-      },
+      type: 'http',
+      url: 'https://gitlab.com/api/v4/mcp',
     },
-    placeholders: ['<gitlab-mcp-package>', '<GITLAB_TOKEN>'],
+    placeholders: [],
   },
 };
 
-function normalizeIntegrations(integrations: McpIntegration[]): McpIntegration[] {
+export function resolveMcpIntegrations(integrations: McpIntegration[]): McpIntegration[] {
   const unique = new Set<McpIntegration>();
+  for (const integration of CORE_MCP_INTEGRATIONS) {
+    unique.add(integration);
+  }
   for (const integration of integrations) {
     if (integration in INTEGRATION_TEMPLATES) {
       unique.add(integration);
     }
   }
   return Array.from(unique.values());
+}
+
+function normalizeIntegrations(integrations: McpIntegration[]): McpIntegration[] {
+  return resolveMcpIntegrations(integrations);
 }
 
 function normalizeTargets(targets?: McpManifestTarget[]): McpManifestTarget[] {
@@ -217,6 +228,7 @@ export function previewMcpTemplateSync(
 
   return {
     integrations: selectedIntegrations,
+    coreIntegrations: [...CORE_MCP_INTEGRATIONS],
     placeholders: getTemplatePlaceholders(selectedIntegrations),
     targets: results,
   };
@@ -268,6 +280,7 @@ export function syncMcpTemplateConfigs(
 
   return {
     integrations: selectedIntegrations,
+    coreIntegrations: [...CORE_MCP_INTEGRATIONS],
     placeholders: getTemplatePlaceholders(selectedIntegrations),
     targets: results,
   };
